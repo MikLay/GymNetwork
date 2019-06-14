@@ -2,6 +2,9 @@ package controller;
 
 import com.server.model.entity.Client;
 import com.server.model.entity.Coach;
+import com.server.model.entity.Gym;
+import com.server.model.entity.GymPhotos;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class JsonUtils {
@@ -40,6 +43,31 @@ public class JsonUtils {
         jsonObject.put("sportRang", coach.getSportRang());
         jsonObject.put("payment", coach.getPayment());
         jsonObject.put("sex", coach.getSex());
+        return jsonObject;
+    }
+    
+    public static JSONObject createJSONGym(Gym gym) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("gymId", gym.getGymId());
+        StringBuilder address = new StringBuilder();
+        address.append(gym.getCountry());
+        if(gym.getArea() != null) {
+            address.append(" " + address.getArea());
+        }
+        address.append(" " + gym.getStreet());
+        address.append(" " + gym.getBuilding());
+        if(gym.getOffice() != null) {
+            address.append(" " + gym.getOffice());
+        }
+        jsonObject.put("address", address.toString());
+        jsonObject.put("fine", gym.getFine().toString());
+        jsonObject.put("postIndex", gym.getPostIndex());
+        jsonObject.put("email", gym.getEmail());
+        
+        JSONArray photos = new JSONArray();
+        gym.getGymPhotos().stream().map(GymPhotos::getPhotoUrl).toArray(String[]::new);
+        jsonObject.put("photos", photos);
+        
         return jsonObject;
     }
 }
