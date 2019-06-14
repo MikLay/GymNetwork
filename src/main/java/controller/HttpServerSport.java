@@ -41,7 +41,7 @@ public class HttpServerSport {
         server.createContext("/auth", new AuthHandler(userService, clientService, coachService));
         server.createContext("/coaches", new CoachesHandler(userService, coachService));
         server.createContext("/gyms", new GymsHandler(userService, gymService));
-        server.createContext("/homestat", new HomeStatHandler(coachService, workoutService, gymService, clientService));
+        server.createContext("/homeStat", new HomeStatHandler(coachService, workoutService, gymService, clientService));
 
         server.setExecutor(null); // creates a default executor
 

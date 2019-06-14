@@ -75,6 +75,7 @@ public class HomeStatHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
         log.info("handle start with httpExchange: " + httpExchange);
+
         if (HttpServerSport.addResponses(httpExchange)) return;
 
         String response = "";

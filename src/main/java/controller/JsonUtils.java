@@ -7,6 +7,9 @@ import com.server.model.entity.GymPhoto;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 public class JsonUtils {
     public static JSONObject createJSONClient(Client client) {
         JSONObject jsonClient = new JSONObject();
@@ -15,7 +18,7 @@ public class JsonUtils {
         jsonClient.put("photo", client.getPhotoUrl());
         jsonClient.put("email", client.getEmail());
         jsonClient.put("phone", client.getPhone());
-        jsonClient.put("birthDate", client.getBirthDate().toString());
+        jsonClient.put("age", calculateAge(client.getBirthDate().toLocalDate(), LocalDate.now()));
         return jsonClient;
     }
 
@@ -49,6 +52,13 @@ public class JsonUtils {
         return lastname + " " + firstname + (middlename == null ? "" : (" " + middlename));
     }
 
+    public static int calculateAge(LocalDate birthDate, LocalDate currentDate) {
+        if ((birthDate != null) && (currentDate != null)) {
+            return Period.between(birthDate, currentDate).getYears();
+        } else {
+            return 0;
+        }
+    }
 
     public static StringBuilder writeGymAddress(Gym gym) {
         StringBuilder address = new StringBuilder();
