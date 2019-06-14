@@ -2,8 +2,10 @@ package controller.handler;
 
 import com.server.model.HibernateUtil;
 import com.server.model.entity.Client;
+import com.server.model.entity.Coach;
 import com.server.model.entity.User;
 import com.server.model.service.ClientService;
+import com.server.model.service.CoachService;
 import com.server.model.service.UserService;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -16,18 +18,27 @@ import org.json.simple.JSONObject;
 import java.io.IOException;
 
 public class AuthHandler implements HttpHandler {
-    UserService userService;
-    ClientService clientService;
+    private UserService userService;
+    private ClientService clientService;
+    private CoachService coachService;
 
-    public AuthHandler(UserService userService, ClientService clientService) {
+    public AuthHandler(UserService userService, ClientService clientService, CoachService coachService) {
         this.userService = userService;
         this.clientService = clientService;
+        this.coachService = coachService;
     }
 
     public static String createJSONClient(Client client) {
         JSONObject jsonClient = new JSONObject();
         jsonClient.put("userType", "client");
         jsonClient.put("userData", JsonUtils.createJSONClient(client));
+        return jsonClient.toString();
+    }
+
+    public static String createJSONCoach(Coach coach) {
+        JSONObject jsonClient = new JSONObject();
+        jsonClient.put("userType", "coach");
+        jsonClient.put("userData", JsonUtils.createJSONCoach(coach));
         return jsonClient.toString();
     }
 
@@ -71,15 +82,22 @@ public class AuthHandler implements HttpHandler {
 
         Transaction transactionGetUser = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
 
-        String response = "";
+        String response;
         if (user == null) {
-            response = "User not found";
+            response = "Access denied";
             HttpServerSport.writeBadResponse(httpExchange, response);
         } else {
             switch (user.getUserType()) {
                 case "client": {
                     response = createJSONClient(clientService.getById(user.getUser_real_id()));
+                    break;
                 }
+                // coach
+                default: {
+                    response = createJSONCoach(coachService.getById(user.getUser_real_id()));
+                    break;
+                }
+                //TODO: Add admin
             }
 
             HttpServerSport.writeSuccessResponse(httpExchange, response);

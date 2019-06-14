@@ -56,16 +56,16 @@ public class ClientDaoImpl implements ClientDao {
     @Override
     public List<Client> findByGym(Integer gymId) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Client> clients = (List<Client>) session.createQuery(properties.getProperty("findByGym"))
-                .setParameter("gymId", gymId).list();
+        List<Client> clients = (List<Client>) session.createSQLQuery(properties.getProperty("findByGym"))
+                .setParameter("gymId", gymId).addEntity(Client.class).list();
         return clients;
     }
 
     @Override
     public List<Client> findByCoach(Integer coachId) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Client> clients = (List<Client>) session.createQuery(properties.getProperty("findByCoach"))
-                .setParameter("gymId", coachId).list();
+        List<Client> clients = (List<Client>) session.createSQLQuery(properties.getProperty("findByCoach"))
+                .setParameter("coachId", coachId).addEntity(Client.class).list();
         return clients;
 
     }

@@ -4,12 +4,14 @@ import com.server.model.HibernateUtil;
 import com.server.model.dao.CoachDao;
 import com.server.model.entity.Coach;
 import com.server.model.exception.InvalidIdException;
+import lombok.extern.log4j.Log4j;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import java.util.List;
 import java.util.Properties;
 
+@Log4j
 public class CoachDaoImpl implements CoachDao {
 
     private Properties properties;
@@ -22,17 +24,23 @@ public class CoachDaoImpl implements CoachDao {
 
     @Override
     public List<Coach> findByGym(Integer gymId) {
+        log.info("findByGym start with parameters: gymId: " + gymId);
         Session session = this.sessionFactory.getCurrentSession();
-        List<Coach> coaches = (List<Coach>) session.createQuery(properties.getProperty("findByGym"))
-                .setParameter("gymId", gymId).list();
+        List<Coach> coaches = (List<Coach>) session.createSQLQuery(properties.getProperty("findByGym"))
+                .setParameter("gymId", gymId).addEntity(Coach.class).list();
+        System.out.println(coaches.size());
+        log.info("findByGym end");
         return coaches;
     }
 
     @Override
     public List<Coach> findByClient(Integer clientId) {
+        log.info("findByClient start with parameters: gymId: " + clientId);
+
         Session session = this.sessionFactory.getCurrentSession();
-        List<Coach> coaches = (List<Coach>) session.createQuery(properties.getProperty("findByClient"))
-                .setParameter("clientId", clientId).list();
+        List<Coach> coaches = (List<Coach>) session.createSQLQuery(properties.getProperty("findByClient"))
+                .setParameter("clientId", clientId).addEntity(Coach.class).list();
+        log.info("findByClient end");
         return coaches;
     }
 

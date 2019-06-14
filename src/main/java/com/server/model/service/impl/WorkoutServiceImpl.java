@@ -3,11 +3,11 @@ package com.server.model.service.impl;
 import com.server.model.dao.WorkoutDao;
 import com.server.model.entity.Workout;
 import com.server.model.exception.InvalidIdException;
-import com.server.model.service.WorkoutsService;
+import com.server.model.service.WorkoutService;
 
 import java.util.List;
 
-public class WorkoutServiceImpl implements WorkoutsService {
+public class WorkoutServiceImpl implements WorkoutService {
 
     private WorkoutDao workoutDao;
 

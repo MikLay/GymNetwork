@@ -23,34 +23,36 @@ public class WorkoutDaoImpl implements WorkoutDao {
         this.sessionFactory = HibernateUtil.getSessionFactory();
     }
 
-    public void setSessionFactory(SessionFactory sf) {
-        this.sessionFactory = sf;
-    }
-
     //FindBy methods
     @Override
     public List<Workout> findByCoach(Integer coachId) {
         log.info("findByCoach start with coachId: " + coachId);
-        return getWorkouts(coachId, "selectByCoach", "coachId");
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Workout> workouts = (List<Workout>) session.createSQLQuery(properties.getProperty("selectByCoach"))
+                .setParameter("coachId", coachId).addEntity(Workout.class).list();
+
+        log.info("findByCoach end");
+        return workouts;
     }
 
     @Override
     public List<Workout> findByClient(Integer clientId) {
         log.info("findByClient start with coachId: " + clientId);
-        return HibernateUtil.getSessionFactory().openSession().createQuery(properties.getProperty("selectByClient")).setParameter(clientId, clientId).list();
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Workout> workouts = (List<Workout>) session.createSQLQuery(properties.getProperty("selectByClient"))
+                .setParameter("clientId", clientId)
+                .addEntity(Workout.class).list();
+        log.info("findByClient end");
+        return workouts;
     }
 
     @Override
     public List<Workout> findByGym(Integer gymId) {
-        log.info("findByGym start with gymId: " + gymId);
-        return getWorkouts(gymId, "selectByGym", "gymId");
-    }
-
-    private List<Workout> getWorkouts(Integer clientId, String queryName, String parameterName) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Workout> workouts = (List<Workout>) session.createQuery(properties.getProperty(queryName)).setParameter(parameterName, clientId).list();
-        session.getTransaction().commit();
+        log.info("findByGym start with coachId: " + gymId);
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Workout> workouts = (List<Workout>) session.createQuery(properties.getProperty("selectByGym"))
+                .setParameter("gym_id", gymId).list();
+        log.info("findByGym end");
         return workouts;
     }
 
@@ -58,33 +60,32 @@ public class WorkoutDaoImpl implements WorkoutDao {
     //FindByTwoParameters
     @Override
     public List<Workout> getWorkoutsByCoachInGym(Integer coachId, Integer gymId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
+        log.info("getWorkoutsByCoachInGym start with parameters: coachId: " + gymId + "; gymId: " + gymId);
+        Session session = this.sessionFactory.getCurrentSession();
         List<Workout> amountOfWorkouts = (List<Workout>) session
                 .createQuery(properties.getProperty("selectByCoachAndGym"))
                 .setParameter("coachId", coachId).setParameter("gymId", gymId).list();
-        session.getTransaction().commit();
-
+        log.info("getWorkoutsByCoachInGym end");
         return amountOfWorkouts;
     }
 
     @Override
     public List<Workout> getWorkoutsByClientInGym(Integer clientId, Integer gymId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
+        log.info("getWorkoutsByClientInGym start with parameters: clientId: " + gymId + "; gymId: " + gymId);
+        Session session = this.sessionFactory.getCurrentSession();
         List<Workout> amountOfWorkouts = (List<Workout>) session
                 .createQuery(properties.getProperty("selectByClientAndGym"))
                 .setParameter("clientId", clientId).setParameter("gymId", gymId).list();
-        session.getTransaction().commit();
+        log.info("getWorkoutsByClientInGym end");
         return amountOfWorkouts;
     }
 
     @Override
     public void create(Workout workout) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+        log.info("create start with parameters: workout: " + workout);
+        Session session = this.sessionFactory.getCurrentSession();
         session.save(workout);
-        session.getTransaction().commit();
+        log.info("create end");
     }
 
     @Override
@@ -96,28 +97,21 @@ public class WorkoutDaoImpl implements WorkoutDao {
 
     @Override
     public void update(Workout workout) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+        Session session = this.sessionFactory.getCurrentSession();
         session.update(workout);
-        session.getTransaction().commit();
     }
 
     @Override
     public void delete(Workout workout) {
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.delete(workout);
+        Session session = this.sessionFactory.getCurrentSession();
         session.getTransaction().commit();
-        session.close();
     }
 
     @Override
     public List<Workout> findAll() {
-        log.info("findAll start");
-        Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-        session.beginTransaction();
+        Session session = this.sessionFactory.getCurrentSession();
         List<Workout> workouts = (List<Workout>) session
                 .createQuery(properties.getProperty("findAll")).list();
-        session.getTransaction().commit();
         return workouts;
 
     }

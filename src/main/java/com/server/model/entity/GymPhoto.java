@@ -15,6 +15,7 @@ import java.util.Objects;
 public class GymPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "photo_id")
     private Integer photoId;
 
     @Column(name = "photo_url", nullable = false, length = 250)

@@ -8,7 +8,7 @@ public interface WorkoutDao extends Dao<Workout, Integer> {
 
     List<Workout> findByCoach(Integer coachId);
 
-    List<Workout> findByClient(Integer coachId);
+    List<Workout> findByClient(Integer clientId);
 
     List<Workout> findByGym(Integer gymId);
 

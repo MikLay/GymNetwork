@@ -4,7 +4,7 @@ import com.server.model.entity.Workout;
 
 import java.util.List;
 
-public interface WorkoutsService {
+public interface WorkoutService {
 
     Workout findWorkout(Integer workoutId);
 

@@ -8,16 +8,18 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controller.HttpServerSport;
 import controller.JsonUtils;
+import lombok.extern.log4j.Log4j;
 import org.hibernate.Transaction;
 import org.json.simple.JSONArray;
 
 import java.io.IOException;
 import java.util.List;
 
+@Log4j
 public class CoachesHandler implements HttpHandler {
 
-    UserService userService;
-    CoachService coachService;
+    private UserService userService;
+    private CoachService coachService;
 
     public CoachesHandler(UserService userService, CoachService coachService) {
         this.userService = userService;
@@ -34,27 +36,27 @@ public class CoachesHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+        log.info("handle start with httpExchange: " + httpExchange);
 
-        httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-
-        if (httpExchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
-            httpExchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,authorization");
-            httpExchange.sendResponseHeaders(204, -1);
-            return;
-        }
+        if (HttpServerSport.addResponses(httpExchange)) return;
 
         String response;
         Transaction transactionGetAllUsers = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
-
-        if (!HttpServerSport.isAuth(httpExchange)) {
-            response = "User is unauthorized";
-            HttpServerSport.writeBadResponse(httpExchange, response);
-        } else {
-            response = createJSONCoachesList(coachService.getAll());
+        try {
+            if (!HttpServerSport.isAuth(httpExchange)) {
+                response = "User is unauthorized";
+                HttpServerSport.writeBadResponse(httpExchange, response);
+            } else {
+                response = createJSONCoachesList(coachService.getAll());
+                HttpServerSport.writeSuccessResponse(httpExchange, response);
+            }
+        } catch (Exception e) {
+            log.info("handle caught Exception: " + e);
+            e.printStackTrace();
+        } finally {
+            transactionGetAllUsers.commit();
         }
-        HttpServerSport.writeSuccessResponse(httpExchange, response);
-        transactionGetAllUsers.commit();
+        log.info("handle end");
     }
 
 
