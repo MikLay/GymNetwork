@@ -1,8 +1,6 @@
 package com.server.model.service.impl;
 
-import com.server.model.QueriesManager;
 import com.server.model.dao.SubscriptionDao;
-import com.server.model.dao.impl.SubscriptionDaoImpl;
 import com.server.model.entity.Subscription;
 import com.server.model.exception.InvalidIdException;
 import com.server.model.service.SubscriptionService;
@@ -11,7 +9,7 @@ import java.util.List;
 
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    SubscriptionDao subscriptionDao = new SubscriptionDaoImpl(QueriesManager.getProperties("subscription"));
+    SubscriptionDao subscriptionDao;
 
     public SubscriptionServiceImpl(SubscriptionDao subscriptionDao) {
         this.subscriptionDao = subscriptionDao;

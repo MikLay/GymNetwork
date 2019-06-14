@@ -1,18 +1,17 @@
 package com.server.model.service.impl;
 
-import com.server.model.HibernateUtil;
-import com.server.model.QueriesManager;
 import com.server.model.dao.UserDao;
-import com.server.model.dao.impl.UserDaoImpl;
 import com.server.model.entity.User;
 import com.server.model.exception.InvalidIdException;
 import com.server.model.service.UserService;
-import org.hibernate.Transaction;
 
 public class UserServiceImpl implements UserService {
 
-    private UserDao userDao = new UserDaoImpl(QueriesManager.getProperties("user"));
+    private UserDao userDao;
 
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public User findUser(Integer id) {
@@ -36,14 +35,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User validateUser(String email, String password) {
-        Transaction transaction = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
+    public User authUser(String email, String password) {
         User user = userDao.findByEmail(email);
-        transaction.commit();
         if (user != null && password.equals(user.getUserPassword())) {
             return user;
         }
         return null;
+    }
+
+    @Override
+    public boolean validateAccess(String email, String password) {
+        User user = userDao.findByEmail(email);
+        return user != null && password.equals(user.getUserPassword());
     }
 
     @Override

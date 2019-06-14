@@ -1,5 +1,6 @@
 package controller.handler;
 
+import com.server.model.HibernateUtil;
 import com.server.model.entity.Client;
 import com.server.model.entity.User;
 import com.server.model.service.ClientService;
@@ -9,6 +10,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controller.HttpServerSport;
 import controller.JsonUtils;
+import org.hibernate.Transaction;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
@@ -53,18 +55,25 @@ public class AuthHandler implements HttpHandler {
         }
 
         String[] emailPass = HttpServerSport.parseToken(auth);
+        Transaction transactionUserAuth = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
 
         User user;
+
         try {
-            user = userService.validateUser(emailPass[0], emailPass[1]);
+            user = userService.authUser(emailPass[0], emailPass[1]);
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        } finally {
+            transactionUserAuth.commit();
         }
+
+        Transaction transactionGetUser = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
+
         String response = "";
         if (user == null) {
-            response = "user is null";
+            response = "User not found";
             HttpServerSport.writeBadResponse(httpExchange, response);
         } else {
             switch (user.getUserType()) {
@@ -75,5 +84,7 @@ public class AuthHandler implements HttpHandler {
 
             HttpServerSport.writeSuccessResponse(httpExchange, response);
         }
+
+        transactionGetUser.commit();
     }
 }

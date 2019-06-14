@@ -16,7 +16,7 @@
         <mapping class="com.server.model.entity.Client"/>
         <mapping class="com.server.model.entity.Coach"/>
         <mapping class="com.server.model.entity.Equipment"/>
-        <mapping class="com.server.model.entity.GymPhotos"/>
+        <mapping class="com.server.model.entity.GymPhoto"/>
         <mapping class="com.server.model.entity.Gym"/>
         <mapping class="com.server.model.entity.Roles"/>
         <mapping class="com.server.model.entity.Subscription"/>

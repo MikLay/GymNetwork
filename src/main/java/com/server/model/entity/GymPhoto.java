@@ -12,7 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(value = AccessLevel.PACKAGE)
 @Getter
-public class GymPhotos {
+public class GymPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer photoId;
@@ -27,9 +27,9 @@ public class GymPhotos {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GymPhotos)) return false;
-        GymPhotos gymPhotos = (GymPhotos) o;
-        return Objects.equals(getPhotoUrl(), gymPhotos.getPhotoUrl());
+        if (!(o instanceof GymPhoto)) return false;
+        GymPhoto gymPhoto = (GymPhoto) o;
+        return Objects.equals(getPhotoUrl(), gymPhoto.getPhotoUrl());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class GymPhotos {
 
     @Override
     public String toString() {
-        return "GymPhotos{" +
+        return "GymPhoto{" +
                 "photoId=" + photoId +
                 ", photoUrl='" + photoUrl + '\'' +
                 '}';

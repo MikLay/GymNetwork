@@ -1,14 +1,14 @@
 package controller.handler;
 
+import com.server.model.HibernateUtil;
 import com.server.model.entity.Coach;
-import com.server.model.entity.User;
 import com.server.model.service.CoachService;
 import com.server.model.service.UserService;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import controller.HttpServerSport;
 import controller.JsonUtils;
+import org.hibernate.Transaction;
 import org.json.simple.JSONArray;
 
 import java.io.IOException;
@@ -34,6 +34,7 @@ public class CoachesHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
+
         httpExchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
         if (httpExchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
@@ -43,37 +44,17 @@ public class CoachesHandler implements HttpHandler {
             return;
         }
 
-        String auth;
-        Headers headers = httpExchange.getRequestHeaders();
+        String response;
+        Transaction transactionGetAllUsers = HibernateUtil.getSessionFactory().getCurrentSession().beginTransaction();
 
-        try {
-            auth = headers.getFirst("Authorization");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-        String[] emailPass = HttpServerSport.parseToken(auth);
-
-        User user;
-        try {
-            user = userService.validateUser(emailPass[0], emailPass[1]);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-
-
-        String response = "";
-
-        if (user == null) {
-            response = "user is null";
+        if (!HttpServerSport.isAuth(httpExchange)) {
+            response = "User is unauthorized";
             HttpServerSport.writeBadResponse(httpExchange, response);
         } else {
             response = createJSONCoachesList(coachService.getAll());
         }
         HttpServerSport.writeSuccessResponse(httpExchange, response);
+        transactionGetAllUsers.commit();
     }
 
 

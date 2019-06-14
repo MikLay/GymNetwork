@@ -1,9 +1,6 @@
 package com.server.model.service.impl;
 
-import com.server.model.HibernateUtil;
-import com.server.model.QueriesManager;
 import com.server.model.dao.WorkoutDao;
-import com.server.model.dao.impl.WorkoutDaoImpl;
 import com.server.model.entity.Workout;
 import com.server.model.exception.InvalidIdException;
 import com.server.model.service.WorkoutsService;
@@ -12,11 +9,14 @@ import java.util.List;
 
 public class WorkoutServiceImpl implements WorkoutsService {
 
-    private WorkoutDao workoutDao = new WorkoutDaoImpl(QueriesManager.getProperties("workout"));
+    private WorkoutDao workoutDao;
+
+    public WorkoutServiceImpl(WorkoutDao workoutDao) {
+        this.workoutDao = workoutDao;
+    }
 
     @Override
     public Workout findWorkout(Integer workoutId) {
-        HibernateUtil.getSessionFactory().openSession();
         Workout workout = null;
         try {
             workout = workoutDao.findById(workoutId);

@@ -50,7 +50,7 @@ public class Gym {
     private List<Workout> workoutList;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GymPhotos> gymPhotos;
+    private List<GymPhoto> gymPhotos;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Equipment> equipmentList;
