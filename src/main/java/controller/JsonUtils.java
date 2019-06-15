@@ -1,9 +1,6 @@
 package controller;
 
-import com.server.model.entity.Client;
-import com.server.model.entity.Coach;
-import com.server.model.entity.Gym;
-import com.server.model.entity.GymPhoto;
+import com.server.model.entity.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -12,14 +9,19 @@ import java.time.Period;
 
 public class JsonUtils {
     public static JSONObject createJSONClient(Client client) {
-        JSONObject jsonClient = new JSONObject();
-        jsonClient.put("clientId", client.getClientId().toString());
-        jsonClient.put("name", writeName(client.getLastname(), client.getFirstname(), client.getMiddlename()));
-        jsonClient.put("photo", client.getPhotoUrl());
-        jsonClient.put("email", client.getEmail());
-        jsonClient.put("phone", client.getPhone());
-        jsonClient.put("age", calculateAge(client.getBirthDate().toLocalDate(), LocalDate.now()));
-        return jsonClient;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("clientId", client.getClientId().toString());
+        jsonObject.put("name", writeName(client.getLastname(), client.getFirstname(), client.getMiddlename()));
+        jsonObject.put("photo", client.getPhotoUrl());
+        jsonObject.put("email", client.getEmail());
+        jsonObject.put("phone", client.getPhone());
+        jsonObject.put("age", calculateAge(client.getBirthDate().toLocalDate(), LocalDate.now()));
+        JSONArray subscriptionsArray = new JSONArray();
+
+        client.getSubscriptions().stream().forEach(subscription -> subscriptionsArray.add((JsonUtils.createJSONSubscription(subscription))));
+
+        jsonObject.put("subscriptions", subscriptionsArray);
+        return jsonObject;
     }
 
     public static JSONObject createJSONCoach(Coach coach) {
@@ -89,4 +91,29 @@ public class JsonUtils {
         return jsonObject;
     }
 
+    public static JSONObject createJSONSubscription(Subscription subscription) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("subscriptionId", subscription.getSubscriptionId());
+        jsonObject.put("startDate", subscription.getStartDate().toString());
+        jsonObject.put("startWorkoutTime", subscription.getWorkoutStartTime().toString());
+        jsonObject.put("endWorkoutTime", subscription.getWorkoutEndTime().toString());
+        jsonObject.put("endDate", subscription.getEndDate().toString());
+        jsonObject.put("price", subscription.getPrice());
+        return jsonObject;
+    }
+
+    public static JSONObject createJSONWorkout(Workout workout) {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("id", workout.getWorkoutId());
+        jsonObject.put("date", workout.getStartDate().toLocalDateTime().toLocalDate().toString());
+        jsonObject.put("startTime", workout.getStartDate().toLocalDateTime().toLocalTime().toString());
+        jsonObject.put("endTime", workout.getEndTime().toString());
+        jsonObject.put("price", workout.getSurcharge());
+        jsonObject.put("client", JsonUtils.createJSONClient(workout.getClient()));
+        jsonObject.put("coach", workout.getCoach() == null ? null : JsonUtils.createJSONCoach(workout.getCoach()));
+        jsonObject.put("gym", JsonUtils.createJSONGym(workout.getGym()));
+
+        return jsonObject;
+    }
 }

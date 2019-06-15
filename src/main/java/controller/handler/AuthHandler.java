@@ -32,6 +32,7 @@ public class AuthHandler implements HttpHandler {
         JSONObject jsonClient = new JSONObject();
         jsonClient.put("userType", "client");
         jsonClient.put("userData", JsonUtils.createJSONClient(client));
+
         return jsonClient.toString();
     }
 

@@ -10,10 +10,7 @@ import com.server.model.service.impl.*;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import controller.handler.AuthHandler;
-import controller.handler.CoachesHandler;
-import controller.handler.GymsHandler;
-import controller.handler.HomeStatHandler;
+import controller.handler.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,18 +27,20 @@ public class HttpServerSport {
         UserDao userDao = new UserDaoImpl(QueriesManager.getProperties("user"));
         GymDao gymDao = new GymDaoImpl(QueriesManager.getProperties("gym"));
         WorkoutDao workoutDao = new WorkoutDaoImpl(QueriesManager.getProperties("workout"));
-
+        SubscriptionDao subscriptionDao = new SubscriptionDaoImpl(QueriesManager.getProperties("subscription"));
 
         userService = new UserServiceImpl(userDao);
         ClientService clientService = new ClientServiceImpl(clientDao);
         CoachService coachService = new CoachServiceImpl(coachDao);
         GymService gymService = new GymServiceimpl(gymDao);
         WorkoutService workoutService = new WorkoutServiceImpl(workoutDao);
+        SubscriptionService subscriptionService = new SubscriptionServiceImpl(subscriptionDao);
 
         server.createContext("/auth", new AuthHandler(userService, clientService, coachService));
         server.createContext("/coaches", new CoachesHandler(userService, coachService));
         server.createContext("/gyms", new GymsHandler(userService, gymService));
         server.createContext("/homeStat", new HomeStatHandler(coachService, workoutService, gymService, clientService));
+        server.createContext("/workouts", new WorkoutsHandler(workoutService));
 
         server.setExecutor(null); // creates a default executor
 

@@ -50,8 +50,9 @@ public class WorkoutDaoImpl implements WorkoutDao {
     public List<Workout> findByGym(Integer gymId) {
         log.info("findByGym start with coachId: " + gymId);
         Session session = this.sessionFactory.getCurrentSession();
-        List<Workout> workouts = (List<Workout>) session.createQuery(properties.getProperty("selectByGym"))
-                .setParameter("gym_id", gymId).list();
+        List<Workout> workouts = (List<Workout>) session.createSQLQuery(properties.getProperty("selectByGym"))
+                .setParameter("gym_id", gymId)
+                .addEntity(Workout.class).list();
         log.info("findByGym end");
         return workouts;
     }
